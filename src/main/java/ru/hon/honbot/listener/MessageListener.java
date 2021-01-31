@@ -15,7 +15,7 @@ public abstract class MessageListener {
 
     public Mono<Void> processCommand(Message eventMessage, RestTemplate restTemplate, String apiUrl) {
         System.out.println("Request :: " + eventMessage.getContent());
-        if (eventMessage.getContent().charAt(0) == '.') {
+        if (!eventMessage.getContent().isEmpty() && eventMessage.getContent().charAt(0) == '.') {
             if (eventMessage.getContent().contains(".stat")) {
                 return StatCommand.send(eventMessage, restTemplate, apiUrl);
             }

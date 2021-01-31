@@ -33,7 +33,7 @@ public class StatCommand {
                             return message.getChannel().flatMap(channel ->
                                     channel.createMessage("Пользователь с ником " + nickname + " не найден!"));
                         }
-                        if (response.getStatusCodeValue() == 200 && Objects.nonNull(response.getBody()) && Objects.nonNull(response.getBody().getLastActivity())) {
+                        if (response.getStatusCodeValue() == 200 && Objects.nonNull(response.getBody()) && Objects.nonNull(response.getBody().getMatches())) {
                             ApiResponse res = response.getBody();
                             String author = message.getAuthor().isPresent() ? message.getAuthor().get().getUsername() : "Пользователь";
                             String[] kda = res.getKda().split("/");
