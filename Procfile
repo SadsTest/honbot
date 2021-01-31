@@ -1,0 +1,1 @@
+web: java -jar target/honbot-1.0-SNAPSHOT.jar
