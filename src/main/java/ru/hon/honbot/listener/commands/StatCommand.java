@@ -20,56 +20,58 @@ import java.util.Objects;
 public class StatCommand {
 
     public static Mono<Void> send(Message eventMessage, RestTemplate restTemplate, String apiUrl) {
-        return Mono.just(eventMessage)
-                .filter(message -> message.getAuthor().map(user -> !user.isBot()).orElse(false))
-                .flatMap(message -> {
-                    String command = message.getContent().trim();
-                    if (ValidCommandUtils.validate(command)) {
-                        String nickname = command.split(" ")[1];
-                        ResponseEntity<ApiResponse> response;
-                        try {
-                            response = restTemplate.getForEntity(apiUrl + nickname, ApiResponse.class);
-                        } catch (Exception e) {
-                            return message.getChannel().flatMap(channel ->
-                                    channel.createMessage("Пользователь с ником " + nickname + " не найден!"));
-                        }
-                        if (response.getStatusCodeValue() == 200 && Objects.nonNull(response.getBody()) && Objects.nonNull(response.getBody().getMatches())) {
-                            ApiResponse res = response.getBody();
-                            String author = message.getAuthor().isPresent() ? message.getAuthor().get().getUsername() : "Пользователь";
-                            String[] kda = res.getKda().split("/");
-                            float kd = Float.parseFloat(kda[0]) / Float.parseFloat(kda[1]);
-                            float kad = (Float.parseFloat(kda[0]) + Float.parseFloat(kda[2])) / Float.parseFloat(kda[1]);
-                            return message.getChannel().flatMap(channel ->
-                                    channel.createEmbed(spec ->
-                                            spec.setColor(RankUtils.getRank(res.getRank()).getColor())
-                                                    .setAuthor(res.getNickname(), "", RankUtils.getRank(res.getRank()).getImage())
-                                                    .setDescription(
-                                                            "Уровень: " + res.getLevel() + '\n' +
-                                                                    "Ранг: " + RankUtils.getRank(res.getRank()).getName() + '\n' +
-                                                                    "Макс. ранг: " + RankUtils.getRank(res.getHighestRank()).getName() + '\n')
-                                                    .addField("Средние показатели",
-                                                            "WIN: " + ArithmeticUtils.getWins(res.getWins(), res.getMatches()) + "%\n" +
-                                                                    "K/D: " + ArithmeticUtils.getKDA(kd) + '\n' +
-                                                                    "K/D+A: " + ArithmeticUtils.getKDA(kad) + '\n' +
-                                                                    "GPM: " + ArithmeticUtils.roundedPerSec(res.getGold(), res.getSecAllTime()) + '\n' +
-                                                                    "Creep kills: " + ArithmeticUtils.roundedPerGame(res.getCreepsKills(), res.getMatches(), 0) + "\n" +
-                                                                    "Creep denies: " + ArithmeticUtils.roundedPerGame(res.getCreepsDenies(), res.getMatches(), 0) + "\n" +
-                                                                    "Wards: " + ArithmeticUtils.roundedPerGame(res.getWards(), res.getMatches(), 1),
-                                                            false)
-                                                    .addField("Последний матч", res.getLastActivity(), false)
-                                                    .setThumbnail(RankUtils.getRank(res.getRank()).getImage())
-                                                    .setFooter(author, message.getAuthor().get().getAvatarUrl())
-                                                    .setTimestamp(Instant.now())
-                                    ));
+        if (eventMessage.getAuthor().map(user -> !user.isBot()).orElse(false)) {
+            return Mono.just(eventMessage)
+                    .flatMap(message -> {
+                        String command = message.getContent().trim();
+                        if (ValidCommandUtils.validate(command)) {
+                            String nickname = command.split(" ")[1];
+                            ResponseEntity<ApiResponse> response;
+                            try {
+                                response = restTemplate.getForEntity(apiUrl + nickname, ApiResponse.class);
+                            } catch (Exception e) {
+                                return message.getChannel().flatMap(channel ->
+                                        channel.createMessage("Пользователь с ником " + nickname + " не найден!"));
+                            }
+                            if (response.getStatusCodeValue() == 200 && Objects.nonNull(response.getBody()) && Objects.nonNull(response.getBody().getMatches())) {
+                                ApiResponse res = response.getBody();
+                                String author = message.getAuthor().isPresent() ? message.getAuthor().get().getUsername() : "Пользователь";
+                                String[] kda = res.getKda().split("/");
+                                float kd = Float.parseFloat(kda[0]) / Float.parseFloat(kda[1]);
+                                float kad = (Float.parseFloat(kda[0]) + Float.parseFloat(kda[2])) / Float.parseFloat(kda[1]);
+                                return message.getChannel().flatMap(channel ->
+                                        channel.createEmbed(spec ->
+                                                spec.setColor(RankUtils.getRank(res.getRank()).getColor())
+                                                        .setAuthor(res.getNickname(), "", RankUtils.getRank(res.getRank()).getImage())
+                                                        .setDescription(
+                                                                "Уровень: " + res.getLevel() + '\n' +
+                                                                "Ранг: " + RankUtils.getRank(res.getRank()).getName() + '\n' +
+                                                                "Макс. ранг: " + RankUtils.getRank(res.getHighestRank()).getName() + '\n')
+                                                        .addField("Средние показатели:",
+                                                         "WIN: " + ArithmeticUtils.getWins(res.getWins(), res.getMatches()) + "%\n" +
+                                                                "K/D: " + ArithmeticUtils.getKDA(kd) + '\n' +
+                                                                "K/D+A: " + ArithmeticUtils.getKDA(kad) + '\n' +
+                                                                "GPM: " + ArithmeticUtils.roundedPerSec(res.getGold(), res.getSecAllTime()) + '\n' +
+                                                                "Creep kills: " + ArithmeticUtils.roundedPerGame(res.getCreepsKills(), res.getMatches(), 0) + "\n" +
+                                                                "Creep denies: " + ArithmeticUtils.roundedPerGame(res.getCreepsDenies(), res.getMatches(), 0) + "\n" +
+                                                                "Wards: " + ArithmeticUtils.roundedPerGame(res.getWards(), res.getMatches(), 1),
+                                                                false)
+                                                        .addField("Последний матч:", res.getLastActivity(), false)
+                                                        .setThumbnail(RankUtils.getRank(res.getRank()).getImage())
+                                                        .setFooter(author, message.getAuthor().get().getAvatarUrl())
+                                                        .setTimestamp(Instant.now())
+                                        ));
+                            } else {
+                                return message.getChannel().flatMap(channel ->
+                                        channel.createMessage("Статистика " + nickname + " пуста!"));
+                            }
                         } else {
                             return message.getChannel().flatMap(channel ->
-                                    channel.createMessage("Статистика " + nickname + " пуста!"));
+                                    channel.createMessage("Неверная команда: «" + message.getContent() + '»'));
                         }
-                    } else {
-                        return message.getChannel().flatMap(channel ->
-                                channel.createMessage("Неверная команда: «"+ message.getContent()+'»'));
-                    }
-                })
-                .then();
+                    })
+                    .then();
+        }
+        return Mono.empty();
     }
 }
