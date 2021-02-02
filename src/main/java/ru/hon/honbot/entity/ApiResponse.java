@@ -18,28 +18,28 @@ public class ApiResponse {
     @JsonProperty("nickname")
     private String nickname;
     @JsonProperty("level")
-    private Integer level;
+    private Integer level = 0;
     @JsonProperty("current_level")
-    private Integer rank;
+    private Integer rank = 0;
     @JsonProperty("highest_level_current")
-    private Integer highestRank;
+    private Integer highestRank = 0;
     @JsonProperty("k_d_a")
-    private String kda;
+    private String kda = "0/0/0";
     @JsonProperty("last_activity")
-    private String lastActivity;
+    private String lastActivity = "0/0/0";
     @JsonProperty("cam_gold")
-    private Long gold;
+    private Long gold = 0L;
     @JsonProperty("cam_secs")
-    private Long secAllTime;
+    private Long secAllTime = 0L;
     @JsonProperty("cam_wins")
-    private Double wins;
+    private Double wins = 0.0;
     @JsonProperty("cam_games_played")
-    private Double matches;
+    private Double matches = 0.0;
     @JsonProperty("cam_teamcreepkills")
-    private Double creepsKills;
+    private Double creepsKills = 0.0;
     @JsonProperty("cam_denies")
-    private Double creepsDenies;
+    private Double creepsDenies = 0.0;
     @JsonProperty("cam_wards")
-    private Double wards;
+    private Double wards = 0.0;
 
 }

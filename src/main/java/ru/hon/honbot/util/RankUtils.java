@@ -58,4 +58,51 @@ public class RankUtils {
                 return new Rank("Неизвестно", "https://images-ext-2.discordapp.net/external/DmmBtcyCPyzGgYLDjbMgrPP3b-Ct2J0Uhz5rlTYeu7Q/https/s3.amazonaws.com/naeu-icb2/icons/default/account/default.png", Color.GRAY);
         }
     }
+
+    public static String getRankName(int pos) {
+        switch (pos) {
+            case 1:
+                return "BRONZE 5";
+            case 2:
+                return "BRONZE 4";
+            case 3:
+                return "BRONZE 3";
+            case 4:
+                return "BRONZE 2";
+            case 5:
+                return "BRONZE 1";
+            case 6:
+                return "SILVER 5";
+            case 7:
+                return "SILVER 4";
+            case 8:
+                return "SILVER 3";
+            case 9:
+                return "SILVER 2";
+            case 10:
+                return "SILVER 1";
+            case 11:
+                return "GOLD 4";
+            case 12:
+                return "GOLD 3";
+            case 13:
+                return "GOLD 2";
+            case 14:
+                return "GOLD 1";
+            case 15:
+                return "DIAMOND 3";
+            case 16:
+                return "DIAMOND 2";
+            case 17:
+                return "DIAMOND 1";
+            case 18:
+                return "LEGENDARY 2";
+            case 19:
+                return "LEGENDARY 1";
+            case 20:
+                return "IMMORTAL";
+            default:
+                return "Неизвестно";
+        }
+    }
 }
