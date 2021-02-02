@@ -9,6 +9,6 @@ public class ChannelUtils {
 
     public static boolean checkChannel(String name) {
         name = name.toLowerCase();
-        return name.equals("test") || name.equals("статистика");
+        return name.equals("test") || name.equals("\uD83D\uDCF0・статистика");
     }
 }
