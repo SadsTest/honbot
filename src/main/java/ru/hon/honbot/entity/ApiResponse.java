@@ -1,5 +1,6 @@
 package ru.hon.honbot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ApiResponse {
 
     @JsonProperty("nickname")
@@ -42,4 +44,7 @@ public class ApiResponse {
     @JsonProperty("cam_wards")
     private Double wards = 0.0;
 
+    public void setLastActivity(String lastActivity) {
+        this.lastActivity = lastActivity.isEmpty() ? "0/0/0" : lastActivity;
+    }
 }

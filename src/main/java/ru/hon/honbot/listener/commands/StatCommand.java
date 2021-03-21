@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 import ru.hon.honbot.entity.ApiResponse;
 import ru.hon.honbot.util.ArithmeticUtils;
 import ru.hon.honbot.util.RankUtils;
+import ru.hon.honbot.util.RequestApiForStat;
 import ru.hon.honbot.util.ValidCommandUtils;
 
 import java.time.Instant;
@@ -26,15 +27,14 @@ public class StatCommand {
                         String command = message.getContent().trim();
                         if (ValidCommandUtils.validate(command)) {
                             String nickname = command.split(" ")[1];
-                            ResponseEntity<ApiResponse> response;
+                            ApiResponse res;
                             try {
-                                response = restTemplate.getForEntity(apiUrl + nickname, ApiResponse.class);
+                                res = RequestApiForStat.request(nickname);
                             } catch (Exception e) {
                                 return message.getChannel().flatMap(channel ->
                                         channel.createMessage("Пользователь с ником " + nickname + " не найден!"));
                             }
-                            if (response.getStatusCodeValue() == 200 && Objects.nonNull(response.getBody()) && Objects.nonNull(response.getBody().getMatches())) {
-                                ApiResponse res = response.getBody();
+                            if (Objects.nonNull(res) && Objects.nonNull(res.getMatches())) {
                                 String author = message.getAuthor().isPresent() ? message.getAuthor().get().getUsername() : "Пользователь";
                                 String[] kda = res.getKda().split("/");
                                 float kd = Float.parseFloat(kda[0]) / Float.parseFloat(kda[1]);
