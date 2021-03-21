@@ -1,6 +1,8 @@
 package ru.hon.honbot.listener.commands;
 
+import discord4j.core.object.entity.GuildEmoji;
 import discord4j.core.object.entity.Message;
+import discord4j.rest.service.EmojiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
@@ -11,7 +13,9 @@ import ru.hon.honbot.util.RequestApiForStat;
 import ru.hon.honbot.util.ValidCommandUtils;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Created by Madolimov Evgeny.
@@ -25,6 +29,7 @@ public class StatCommand {
             return Mono.just(eventMessage)
                     .flatMap(message -> {
                         String command = message.getContent().trim();
+                        final List<GuildEmoji> guildEmojis = message.getGuild().map(g -> g.getEmojis().collect(Collectors.toList())).block().block();
                         if (ValidCommandUtils.validate(command)) {
                             String nickname = command.split(" ")[1];
                             ApiResponse res;
@@ -55,6 +60,9 @@ public class StatCommand {
                                                                 "Creep kills: " + ArithmeticUtils.roundedPerGame(res.getCreepsKills(), res.getMatches(), 0) + "\n" +
                                                                 "Creep denies: " + ArithmeticUtils.roundedPerGame(res.getCreepsDenies(), res.getMatches(), 0) + "\n" +
                                                                 "Wards: " + ArithmeticUtils.roundedPerGame(res.getWards(), res.getMatches(), 1),
+                                                                false)
+                                                        .addField("Любимые герои:",
+                                                                res.getFavoriteHeroes(guildEmojis),
                                                                 false)
                                                         .addField("Последний матч:", res.getLastActivity(), false)
                                                         .setThumbnail(RankUtils.getRank(res.getRank()).getImage())
